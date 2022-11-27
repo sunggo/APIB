@@ -12,7 +12,7 @@ import torch.optim as optim
 import numpy as np
 from dataset import cifar10,cifar100
 from tensorboardX import SummaryWriter
-from models.resnet_imagenet import resnet50, resnet50_X,resnet18_X
+from models.resnet_imagenet import resnet50, resnet50_X#,resnet18_X
 from models.vgg_cifar import vgg16,vgg16_X
 from models.resnet_cifar import resnet20,resnet20_X,resnet44,resnet44_X,resnet110,resnet110_X,resnet56,resnet56_X
 from models.googlenet import googlenet,googlenet_X

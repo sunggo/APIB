@@ -25,7 +25,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO,
 fh = logging.FileHandler(os.path.join('checkpoints/', 'log.txt'))
 fh.setFormatter(logging.Formatter(log_format))
 logging.getLogger().addHandler(fh)
-os.environ['CUDA_VISIBLE_DEVICES']='1'
+# os.environ['CUDA_VISIBLE_DEVICES']='1'
 def get_config():
     print('=> Building model..')
 

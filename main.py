@@ -148,7 +148,7 @@ HSIClassopruner_config.fmap_save_path = args.fmap_save_path
 HSIClassopruner = HSICLassoPruner(HSIClassopruner_config)
 HSIClassopruner.metric()
 HSIClassopruner.auto_prune(args.model,alpha=args.alpha,target_params=args.target,tolerance=args.tolerance,threshold=args.omega)
-HSICLassoPruner.save_pruned_model('./')
+HSIClassopruner.save_pruned_model('./')
 
 
 

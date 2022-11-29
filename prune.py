@@ -438,7 +438,7 @@ class HSICLassoPruner(Pruner):
             #step+=1
                 # binary search
             alpha = (left + right) / 2
-            params=self.pruning_strategy[name](right,name,threshold)  #剪枝，求参数量
+            params=self.pruning_strategy[name](alpha,name,threshold)  #剪枝，求参数量
             print('alpha: %.9f, params: %d, '
                   'left: %.9f, right: %.9f, left_bound: %.9f, right_bound: %.9f' %
                   (alpha,params , left, right, lbound, rbound))            

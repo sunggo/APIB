@@ -22,25 +22,25 @@ from torch.utils.data import DataLoader
 
 def parse_args():
     parser = argparse.ArgumentParser(description='finetune')
-    parser.add_argument('--model', default='resnet50_X', type=str, help='name of the model to train')
-    parser.add_argument('--dataset', default='imagenet', type=str, help='name of the dataset to train')
+    parser.add_argument('--model', default=None, type=str, help='name of the model to train')
+    parser.add_argument('--dataset', default=None, type=str, help='name of the dataset to train')
     parser.add_argument('--lr', default=0.025, type=float, help='learning rate')
     parser.add_argument('--n_gpu', default=1, type=int, help='number of GPUs to use')
     parser.add_argument('--batch_size', default=128, type=int, help='batch size')
     parser.add_argument('--n_worker', default=8, type=int, help='number of data loader worker')
     parser.add_argument('--lr_type', default='cos', type=str, help='lr scheduler (exp/cos/step3/fixed)')
-    parser.add_argument('--n_epoch', default=100, type=int, help='number of epochs to train')
+    parser.add_argument('--n_epoch', default=135, type=int, help='number of epochs to train')
     parser.add_argument('--wd', default=1e-4, type=float, help='weight decay')
     parser.add_argument('--seed', default=None, type=int, help='random seed to set')
     parser.add_argument('--cfg', default=None,type=str, help='channel number of each layer')
     parser.add_argument('--data_root', default=None, type=str, help='dataset path')
     # resume
-    parser.add_argument('--ckpt_path', default='/home/guosong/channel_pruning_lasso-master/itpruner_model/vgg_best.pth.tar', type=str, help='checkpoint path to resume from')
+    parser.add_argument('--ckpt_path', default=None, type=str, help='checkpoint path to resume from')
     # run eval
     parser.add_argument('--eval', action='store_true', help='Simply run eval')
     parser.add_argument('--mixup', default=False,action='store_true', help='use mixup data augmentation')
     parser.add_argument('--prune_layer', nargs="+", default=None, help='layer to prune')
-    parser.add_argument('--data_path',type=str,default='datasets/cifar',help='The dictionary where the input is stored. default:')
+    parser.add_argument('--data_path',type=str,default=None,help='The dictionary where the input is stored. default:')
 
     return parser.parse_args()
 
@@ -280,11 +280,11 @@ if __name__ == '__main__':
     if args.dataset == "cifar10":
         loader = cifar10.Data(args)
         train_loader=loader.trainLoader
-        val_loader=loader.testLoader
+        test_loader=loader.testLoader
     elif args.dataset == "cifar100":
         loader = cifar100.Data(args)
         train_loader=loader.trainLoader
-        val_loader=loader.testLoader
+        test_loader=loader.testLoader
     elif args.dataset == "imagenet":
         traindir = os.path.join(args.data_path, 'train')
         valdir   = os.path.join(args.data_path, 'val')
@@ -326,16 +326,12 @@ if __name__ == '__main__':
     del net
 
     net = get_model()
-    checkpoint = args.ckpt_path
-    if 'state_dict' in checkpoint:
-        checkpoint = checkpoint['state_dict']
+    if args.ckpt_path is not None:  # assigned checkpoint path to resume from
+        print('=> Resuming from checkpoint..')
+        checkpoint = torch.load(args.ckpt_path)
+        checkpoint = checkpoint['state_dict'] if 'state_dict' in checkpoint else checkpoint
         checkpoint = {k.replace('module.', ''): v for k, v in checkpoint.items()}
         net.load_state_dict(checkpoint)
-    # if args.ckpt_path is not None:  # assigned checkpoint path to resume from
-    #     print('=> Resuming from checkpoint..')
-    #     checkpoint = torch.load(args.ckpt_path)
-    #     sd = checkpoint['state_dict'] if 'state_dict' in checkpoint else checkpoint
-    #     net.load_state_dict(sd)
 
     if use_cuda and args.n_gpu > 1:
         net = torch.nn.DataParallel(net, list(range(args.n_gpu)))
